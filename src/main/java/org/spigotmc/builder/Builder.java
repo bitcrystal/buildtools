@@ -52,6 +52,7 @@ import joptsimple.OptionSpec;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.TeeOutputStream;
+import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -150,25 +151,25 @@ public class Builder
         File bukkit = new File( "Bukkit" );
         if ( !bukkit.exists() )
         {
-            clone( "https://hub.spigotmc.org/stash/scm/spigot/bukkit.git", bukkit );
+            clone( "https://github.com/bitcrystal/bukkit", bukkit );
         }
 
         File craftBukkit = new File( "CraftBukkit" );
         if ( !craftBukkit.exists() )
         {
-            clone( "https://hub.spigotmc.org/stash/scm/spigot/craftbukkit.git", craftBukkit );
+            clone( "https://github.com/bitcrystal/craftbukkit", craftBukkit );
         }
 
         File spigot = new File( "Spigot" );
         if ( !spigot.exists() )
         {
-            clone( "https://hub.spigotmc.org/stash/scm/spigot/spigot.git", spigot );
+            clone( "https://github.com/bitcrystal/spigot", spigot );
         }
 
         File buildData = new File( "BuildData" );
         if ( !buildData.exists() )
         {
-            clone( "https://hub.spigotmc.org/stash/scm/spigot/builddata.git", buildData );
+            clone( "https://github.com/bitcrystal/builddata", buildData );
         }
 
         File maven = new File( "apache-maven-3.2.3" );
@@ -179,7 +180,7 @@ public class Builder
             File mvnTemp = new File( "mvn.zip" );
             mvnTemp.deleteOnExit();
 
-            download( "http://static.spigotmc.org/maven/apache-maven-3.2.3-bin.zip", mvnTemp );
+            download( "https://github.com/bitcrystal/dx/raw/master/apache-maven-3.2.3-bin.zip", mvnTemp );
             unzip( mvnTemp, new File( "." ) );
         }
 
@@ -202,7 +203,7 @@ public class Builder
                 String verInfo;
                 try
                 {
-                    verInfo = get( "https://hub.spigotmc.org/versions/" + askedVersion + ".json" );
+                    verInfo = get( "https://github.com/bitcrystal/dx/raw/master/versions/" + askedVersion + ".json" );
                 } catch ( IOException ex )
                 {
                     System.err.println( "Could not get version " + askedVersion + " does it exist? Try another version or use 'latest'" );
@@ -455,21 +456,26 @@ public class Builder
 
     public static void pull(Git repo, String ref) throws Exception
     {
+       pull(repo, ref, "master");
+    }
+
+     public static void pull(Git repo, String ref, String branch) throws Exception
+    {
         System.out.println( "Pulling updates for " + repo.getRepository().getDirectory() );
 
-        repo.reset().setRef( "origin/master" ).setMode( ResetCommand.ResetType.HARD ).call();
+        repo.reset().setRef( "origin/"+branch ).setMode( ResetCommand.ResetType.HARD ).call();
         repo.fetch().call();
 
         System.out.println( "Successfully fetched updates!" );
 
         repo.reset().setRef( ref ).setMode( ResetCommand.ResetType.HARD ).call();
-        if ( ref.equals( "master" ) )
+        if ( ref.equals( branch ) )
         {
-            repo.reset().setRef( "origin/master" ).setMode( ResetCommand.ResetType.HARD ).call();
+            repo.reset().setRef( "origin/"+branch ).setMode( ResetCommand.ResetType.HARD ).call();
         }
         System.out.println( "Checked out: " + ref );
     }
-
+    
     public static int runProcess(File workDir, String... command) throws Exception
     {
         ProcessBuilder pb = new ProcessBuilder( command );
@@ -569,6 +575,21 @@ public class Builder
         }
     }
 
+    public static void clone(String url, File target, String branch) throws GitAPIException
+    {
+        System.out.println( "Starting clone of " + url + " to " + target );
+        Git result = Git.cloneRepository().setBranch( branch ).setURI( url ).setDirectory( target ).call();
+
+        try
+        {
+            System.out.println( "Cloned git repository " + url + " to " + target.getAbsolutePath() + ". Current HEAD: " + commitHash( result ) );
+
+        } finally
+        {
+            result.close();
+        }
+    }
+    
     public static void clone(String url, File target) throws GitAPIException
     {
         System.out.println( "Starting clone of " + url + " to " + target );
