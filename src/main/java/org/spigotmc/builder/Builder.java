@@ -151,25 +151,25 @@ public class Builder
         File bukkit = new File( "Bukkit" );
         if ( !bukkit.exists() )
         {
-            clone( "https://github.com/bitcrystal/bukkit", bukkit );
+            clone( "https://github.com/bitcrystal/bukkit.git", bukkit );
         }
 
         File craftBukkit = new File( "CraftBukkit" );
         if ( !craftBukkit.exists() )
         {
-            clone( "https://github.com/bitcrystal/craftbukkit", craftBukkit );
+            clone( "https://github.com/bitcrystal/craftbukkit.git", craftBukkit );
         }
 
         File spigot = new File( "Spigot" );
         if ( !spigot.exists() )
         {
-            clone( "https://github.com/bitcrystal/spigot", spigot );
+            clone( "https://github.com/bitcrystal/spigot.git", spigot );
         }
 
         File buildData = new File( "BuildData" );
         if ( !buildData.exists() )
         {
-            clone( "https://github.com/bitcrystal/builddata", buildData );
+            clone( "https://github.com/bitcrystal/builddata.git", buildData );
         }
 
         File maven = new File( "apache-maven-3.2.3" );
