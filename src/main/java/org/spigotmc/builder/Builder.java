@@ -242,7 +242,7 @@ public class Builder
         File vanillaJar = new File( workDir, "minecraft_server." + versionInfo.getMinecraftVersion() + ".jar" );
         if ( !vanillaJar.exists() )
         {
-            download( String.format( "https://s3.amazonaws.com/Minecraft.Download/versions/%1$s/minecraft_server.%1$s.jar", versionInfo.getMinecraftVersion() ), vanillaJar );
+            download( String.format( "https://github.com/bitcrystal/dx/raw/master/minecraft_server.%1$s.jar", versionInfo.getMinecraftVersion() ), vanillaJar);
         }
 
         Iterable<RevCommit> mappings = buildGit.log()
